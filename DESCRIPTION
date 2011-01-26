@@ -1,0 +1,14 @@
+Package: TDARACNE
+Type: Package
+Title: Network reverse engineering from time course data. 
+Version: 1.0.4
+Date: 2009-11-11
+Author: Zoppoli P.,Morganella S., Ceccarelli M.
+Maintainer: Zoppoli Pietro <zoppoli.pietro@gmail.com>
+Depends: GenKern, Rgraphviz, Biobase
+biocViews: Microarray, TimeCourse
+Description: To infer gene networks from time-series measurements is a current challenge into  bioinformatics research  area. In order to detect dependencies between genes at different time delays, we propose an  approach  to  infer  gene  regulatory  networks  from  time-series measurements starting from a well known algorithm based on information theory. The proposed algorithm is expected to  be useful in reconstruction of small biological directed networks from time course data.
+License: GPL-2
+collate: IcEfx.R PercentileC.R RangeRank2.R CalcMI_time2.R bootstrap.R saveTime.R MItimeIcE2.R MItimeThreshperm2.R DPI_TDAracne.R DPI2_TDAracne.R  ToTheGraph_timeShiftmax2.R TDARACNE.R TDARACNEdataPublished.R plotRgraphviz.R
+LazyLoad: yes
+

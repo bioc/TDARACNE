@@ -1,0 +1,155 @@
+%\VignetteIndexEntry{TDARACNE}
+
+\documentclass[12pt]{article}
+
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage[authoryear]{natbib}
+\usepackage{Sweave}
+
+%\documentclass[a4paper,10pt]{article}
+
+%\usepackage[dvips,colorlinks=true]{hyperref}
+%\hypersetup{
+%	bookmarksnumbered=true,
+%	linkcolor=black,
+%	citecolor=black,
+%	pagecolor=black,
+%	urlcolor=black,
+%}
+%\usepackage{Sweave}
+%\usepackage{a4wide}
+%\SweaveOpts{echo=FALSE}
+%\usepackage{a4wide}
+\title{TDARACNE}
+\author{P. Zoppoli, S. Morganella, M. Ceccarelli}
+
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+
+
+\section{Overview}
+
+This document describes classes and functions of TD-ARACNE (TimeDelay ARACNE) package. \\
+One of main  aims of Molecular Biology is the  gain of knowledge about
+how molecular  components interact each  other and to  understand gene
+function regulations.  Using microarray  technology, it is possible to
+extract measurements of thousands of genes into a single analysis step
+having a  picture of  the cell gene  expression. Several  methods have
+been  developed to infer  gene networks  from steady-state  data, much
+less literature is produced about time-course data, so the development
+of algorithms to infer  gene networks from time-series measurements is
+a  current challenge into  bioinformatics research  area. In  order to
+detect dependencies between genes at different time delays, we propose
+an  approach  to  infer  gene  regulatory  networks  from  time-series
+measurements starting from a well known algorithm based on information
+theory.\\
+We have shown \citep{Zoppoli2010} how the ARACNE (Algorithm for the Reconstruction
+of  Accurate  Cellular  Networks)  algorithm \citep{Margolin2006}  can  be  used  for  gene
+regulatory  network inference  in the  case of  time-course expression
+profiles. The  resulting method  is called TimeDelay-ARACNE.   It just
+tries  to extract  dependencies between  two genes  at  different time
+delays, providing a  measure of these dependencies in  terms of mutual
+information.  The  basic idea of  the proposed algorithm is  to detect
+time-delayed dependencies between  the expression profiles by assuming
+as underlying  probabilistic model  a stationary Markov  Random Field.
+Less  informative   dependencies  are  filtered  out   using  an  auto
+calculated    threshold,   retaining   most    reliable   connections.
+TimeDelay-ARACNE  can infer  small  local networks  of time  regulated
+gene-gene  interactions detecting  their versus  and  also discovering
+cyclic  interactions   also  when   only  a  medium-small   number  of
+measurements are  available.\\
+The idea on which TimeDelay-ARACNE is based  comes from the consideration that the
+expression of a gene at a  certain time could depend by the expression
+level  of another  gene at  previous time  point or  at very  few time
+points before.  TimeDelay-ARACNE is  a three-steps algorithm: first it
+detects, for all  genes, the time point of the  initial changes in the
+expression,  secondly  there is  network  construction  and finally  a
+network pruning step.\\
+The goal of TimeDelay-ARACNE is to recover gene time dependencies from
+time-course  data producing oriented  graph. To  do this  we introduce
+time  Mutual  Information  and  Influence concepts.   First  tests  on
+synthetic networks and on yeast  cell cycle, SOS pathway data and IRMA
+give  good results  but many  other tests  should be  made. Particular
+attention is  to be  made to the  data normalization step  because the
+lack of a rule. According to the little performance loss linked to the
+increasing gene numbers shown in  \citep{Zoppoli2010},  next developmental step
+will be the extension from little-medium networks to medium networks.\\
+TD-ARACNE algorithm given time-course gene expression values allows to obtain an oriented graph representing a gene regulatory network. The goal of this package is to create a tool useful to gene regulation's researchers in order to obtain a first unvalidated look at the regulatory network.
+The package makes use of the GenKern \citep{Lucy2010} package to compute the kernel, the Biobase package \citep{Gentleman2004} and the Rgraphviz package \citep{Gentry}.
+The functions in the package will work on numeric data organized in a matrix. The results of these procedures will change slightly depending on normalization choice and the number of the classes in the discretization step. 
+The example data included in the package are used in \citep{Zoppoli2010}
+
+
+\section{Data Description}
+Input data is an ExpressionSet object. An  example can be a dataset downloaded from GEO or ArrayExpress converted in an ExpressionSet object .
+In the TDARACNE package you can found 3 example datasets.
+The first one is the Yeast dataset, a time course profile made by a set of 11 genes, part of the G1 step of yeast cell cycle, selected from the widely used yeast, \textit{Saccharomyces cerevisiae}, previously published by \cite{Spellman1998} for which  $16$ time points are available. The data can be loaded as follows:
+<<print=TRUE,eval=FALSE>>=
+data(dataYeast)
+data(threshYeast)
+@ 
+The second dataset is made by the time course profiles for a set of 8 genes, part of the SOS pathway of \textit{E.  coli}~\cite{Ronen2002} from which the first 14 points (excluding the first point of the data which is zero) are used. 
+<<print=TRUE,eval=FALSE>>=
+data(dataSOSmean)
+data(threshSOSmean)
+@ 
+The third one is a 5 genes sets of time course profiles provided by real-time PCR from an  in vivo yeast synthetic network  \cite{cantone2009}. The Switch ON data  set, is the  result of the time measurements, every 20 minutes for 5 hours, of the mRNA concentration after shifting cells from glucose  to galactose, for a total of 5 profiles of 16 points. 
+<<print=TRUE,eval=FALSE>>=
+data(dataIRMAon)
+data(threshIRMAon)
+@ 
+\section{main function}
+The main function is:
+TDARACNE(z, N, name, delta , likehood, norm, logarithm, thresh, ksd, tolerance)
+Here follow a brief description of the arguments:
+arguments{
+  \textbf{eSet}: eSet is the ExpressionSet object \\
+  \textbf{N}: N is respectively the number of bins in percentile normalization or in rank\\
+  \hspace*{10 mm} normalization\\
+  \textbf{delta}: delta is the maximum time delay allowed to infer connections\\
+  \textbf{likehood}: likehood is the fold change used as threshold to state the initial\\
+  \hspace*{10 mm} change expression (IcE)\\
+  \textbf{norm}: normalization;\\
+ \hspace*{10 mm} if you want column percentile normalization (row normalization) put\\
+ \hspace*{10 mm} norm == 1; \\
+ \hspace*{10 mm}if you want Rank normalization put norm == 2;\\
+  \textbf{logarithm}: if z is log put logarithm == 0;\\
+  \textbf{thresh}: the Influence threshold.\\
+ \hspace*{10 mm}if you have a threshold and a SD( standard deviation) put them here\\
+  \hspace*{10 mm}in this format: c(thresh,SD);\\
+ \hspace*{10 mm}if you don't have threshold put 0 in thresh;\\
+  \textbf{ksd}: ksd is the standard deviation multiplier;\\
+  \textbf{tolerance}: tolerance is the DPI tolerance;\\
+\hspace*{10 mm}0 means no tolerance;\\
+\hspace*{10 mm}1 means no DPI;\\
+\hspace*{10 mm}0.15 is the default ARACNE tolerance as it is for TDARACNE;\\
+\textbf{plot}: plot must be TRUE to obtain automatically the graph\\
+\textbf{dot}: dot must be TRUE to obtain a .dot file \\
+\textbf{name}: the name of the .dot file resulting in the end\\
+\textbf{adj}: adj must be TRUE to obtain an adjacent matrix\\
+\\
+TDARACNE() automatically load the libraries that needs but it requires them installed when TDARACNE() starts.
+An example using the embedded dataset is:
+<<print=TRUE,eval=FALSE>>=
+TDARACNE(dataIRMAon,11,"netIRMAon",delta=3,likehood=1.2,norm=2,logarithm=1,thresh=threshIRMAon,ksd=0,0.15); 
+@
+To obtain all the results published in the paper \cite{Zoppoli2010} you can use (attention is time consuming):
+<<print=TRUE,eval=FALSE>>=
+ TDARACNEdataPublished()
+@
+ 
+ \section{Output File Format}
+At the end of the computation TDARACNE() returns a graphNEL object, an adjacent matrix, a graph or a .dot file according to the parameter selected. By default it returns  a graphNEL object.
+
+\bibliographystyle{plain}
+\bibpunct{[}{]}{,}{n}{}{;}
+\bibliography{TDARACNE}
+\end{document}

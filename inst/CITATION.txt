@@ -1,0 +1,3 @@
+Please cite:
+
+P. Zoppoli, S. Morganella, M. Ceccarelli. TimeDelay-ARACNE: Reverse engineering of gene networks from time-course data by an information theoretic approach. BMC Bioinformatics 2010, 11:154.
