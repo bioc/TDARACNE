@@ -1,7 +1,7 @@
 Package: TDARACNE
 Type: Package
 Title: Network reverse engineering from time course data. 
-Version: 1.39.0
+Version: 1.40.0
 Date: 2009-11-11
 Author: Zoppoli P.,Morganella S., Ceccarelli M.
 Maintainer: Zoppoli Pietro <zoppoli.pietro@gmail.com>
